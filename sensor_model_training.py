@@ -298,7 +298,7 @@ print(classification_report(y_val, y_val_pred))
 
 #class_names = [str(c) for c in np.unique(y_val)]  
 # If you have real names:
-class_names = ["No fall", "Right", "Backward", "Left", "Forward"]
+class_names = ["No fall", "Forward", "Backward", "Left", "Right"]
 
 plt.figure(figsize=(6, 5))
 sns.heatmap(

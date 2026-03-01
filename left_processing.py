@@ -39,7 +39,7 @@ clean_acc_gyro = acc_gyro.dropna()
 rename_acc_gyro = clean_acc_gyro.rename(columns={'Acceleration x':'AccX', 'Acceleration y':'AccY', 'Acceleration z':'AccZ', \
                                                 'Gyroscope x':'GyroX', 'Gyroscope y':'GyroY','Gyroscope z':'GyroZ'})
 
-rename_acc_gyro.plot(kind='line', title='Left fall set 3')
+rename_acc_gyro.plot(kind='line', title='Left fall set 5')
 plt.ylabel('Y-Values')
 plt.xlabel('Index')
 plt.show()
@@ -49,6 +49,6 @@ plt.show()
 #Set 3: 60 start
 final_acc_gyro = create_and_update_column(rename_acc_gyro, "direction", 0, 70, 20, 3)
 print(final_acc_gyro)
-final_acc_gyro.to_csv('data\left_set_3.csv', index=False)
+final_acc_gyro.to_csv('data_training\left_set_3.csv', index=False)
 
 

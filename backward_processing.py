@@ -45,8 +45,8 @@ plt.xlabel('Index')
 plt.show()
 
 
-final_acc_gyro = create_and_update_column(rename_acc_gyro, "direction", 0, 39, 20, 2)
+final_acc_gyro = create_and_update_column(rename_acc_gyro, "direction", 0, 38, 20, 2)
 print(final_acc_gyro)
-final_acc_gyro.to_csv('data\\backward_set_3.csv', index=False)
+final_acc_gyro.to_csv('data_training\\backward_set_3.csv', index=False)
 
 

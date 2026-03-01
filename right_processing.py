@@ -28,8 +28,8 @@ def create_and_update_column(df, column_name, default_value, start_n, length_m, 
     
     return df
     
-gyro = pd.read_csv('gyro_right_5.csv')
-acc = pd.read_csv('acc_right_5.csv')
+gyro = pd.read_csv('gyro_right_3.csv')
+acc = pd.read_csv('acc_right_3.csv')
 
 gyro_notime = gyro.drop('Time', axis=1)
 acc_notime = acc.drop('Time', axis=1)
@@ -44,8 +44,8 @@ plt.ylabel('Y-Values')
 plt.xlabel('Index')
 plt.show()
 
-final_acc_gyro = create_and_update_column(rename_acc_gyro, "direction", 0, 32, 20, 4)
+final_acc_gyro = create_and_update_column(rename_acc_gyro, "direction", 0, 48, 20, 4)
 print(final_acc_gyro)
-final_acc_gyro.to_csv('data/right_set_5.csv', index=False)
+final_acc_gyro.to_csv('data_training/right_set_3.csv', index=False)
 
 

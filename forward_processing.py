@@ -49,6 +49,6 @@ plt.show()
 #Set 3: 60 start
 final_acc_gyro = create_and_update_column(rename_acc_gyro, "direction", 0, 60, 20, 1)
 print(final_acc_gyro)
-final_acc_gyro.to_csv('data\\forward_set_3.csv', index=False)
+final_acc_gyro.to_csv('data_training\\forward_set_3.csv', index=False)
 
 
