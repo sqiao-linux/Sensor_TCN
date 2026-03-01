@@ -37,10 +37,11 @@ X_np = np.array([
 print("Shape:", X_np.shape)
 
 NUM_CLASSES = 5
-TIME_STEPS = 20
+TIME_STEPS = 10
 NUM_CHANNELS = 6
+STRIDE_STEPS = 2
 
-N_SAMPLES = 524  # total samples
+#N_SAMPLES = 524  # total samples
 
 # Example synthetic IMU-like data
 #rng = np.random.default_rng(42)
@@ -55,8 +56,8 @@ def generate_sample_from_df(df, X_in, y_in):
 # Output label use backward if label 2 shows in 18+ out of 20 steps
 # Output label use left if label 3 shows in 18+ out of 20 steps
 # Output label use right if label 4 shows in 18+ out of 20 steps
-    window_size = 20
-    stride = 2
+    window_size = TIME_STEPS
+    stride = STRIDE_STEPS
     t = 0
     T_total = df.shape[0]  # returns N of 3D array with shape (N, 20, 6)
     print(T_total)
@@ -65,6 +66,8 @@ def generate_sample_from_df(df, X_in, y_in):
         window = df[t : t + window_size]  # shape (20, 7 (including label))
         x_window = window.iloc[:, :6] 
         y_array = window.iloc[:, 6].to_numpy()
+        low_threshold = window_size*0.7
+        low = int(low_threshold)
     
         # Accumulate value of "window_size" labels
         count_1 = np.sum(y_array == 1)
@@ -74,17 +77,17 @@ def generate_sample_from_df(df, X_in, y_in):
     
         label = 0
       
-        if count_1 >= 14 and count_1 <= 20:
+        if count_1 >= low and count_1 <= window_size:
             label = 1
-        if count_2 >= 14 and count_2 <= 20:
+        if count_2 >= low and count_2 <= window_size:
             label = 2
-        if count_3 >= 14 and count_3 <= 20:
+        if count_3 >= low and count_3 <= window_size:
             label = 3
-        if count_4 >= 14 and count_4 <= 20:
+        if count_4 >= low and count_4 <= window_size:
             label = 4
 
         window_3d = np.expand_dims(x_window, axis=0)
-        if window_3d.shape == (1, 20, 6):
+        if window_3d.shape == (1, TIME_STEPS, 6):
             X_in = np.concatenate([X_in, window_3d], axis=0)
             # Both inputs to concatenate() have to be array type.    
             y_1d = np.array([label])
@@ -123,7 +126,7 @@ combined_df = pd.concat(list_of_dfs, ignore_index=True)
 # Display the resulting DataFrame
 print(combined_df.head()) 
 
-shape = (1, 20, 6)
+shape = (1, TIME_STEPS, 6)
 X_train = np.empty(shape)
 y_train = np.empty(0)
 
@@ -151,7 +154,7 @@ combined_df = pd.concat(list_of_dfs, ignore_index=True)
 print(combined_df.head()) 
 print(combined_df.shape)
 
-shape = (1, 20, 6)
+shape = (1, TIME_STEPS, 6)
 X_val = np.empty(shape)
 y_val = np.empty(0)
 
@@ -162,17 +165,6 @@ print(y_val.shape)
 print(y_val)
 #quit()
 
-# Start Model creation and training
-#split = int(0.9 * len(X))
-#X_train, y_train = X[:split], y[:split]
-#X_val,   y_val   = X[split:], y[split:]
-
-#print("Train:", X_train.shape, y_train.shape)
-#print(X_train)
-#print(y_train)
-#print("Eval:  ", X_val.shape, y_val.shape)
-#print(X_val)
-#print(y_val)
 
 def tcn_block(x, filters, kernel_size, dilation_rate, dropout_rate=0.2):
     """
@@ -212,7 +204,7 @@ def tcn_block(x, filters, kernel_size, dilation_rate, dropout_rate=0.2):
     return x
     
 def build_imu_tcn_model(
-    time_steps=20,
+    time_steps=TIME_STEPS,
     num_channels=6,
     num_classes=5,
     num_filters_list=(32, 32, 64),
@@ -267,7 +259,7 @@ early_stop = EarlyStopping(
     restore_best_weights=True
 )
 
-class_weights = {0:1.0, 1:5.0, 2:1.0, 3:1.0, 4:2.0}
+class_weights = {0:1.0, 1:5.0, 2:2.0, 3:1.0, 4:2.0}
 
 history = model.fit(
     X_train,
@@ -320,3 +312,4 @@ plt.xlabel("Predicted Label")
 plt.ylabel("True Label")
 plt.title("Confusion Matrix")
 plt.show()
+
