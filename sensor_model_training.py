@@ -4,6 +4,7 @@ from tensorflow import keras
 from tensorflow.keras import layers
 from tensorflow.keras.callbacks import EarlyStopping
 from sklearn.metrics import confusion_matrix, classification_report
+from sklearn.utils.class_weight import compute_class_weight
 import seaborn as sns
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -73,13 +74,13 @@ def generate_sample_from_df(df, X_in, y_in):
     
         label = 0
       
-        if count_1 >= 18 and count_1 <= 20:
+        if count_1 >= 14 and count_1 <= 20:
             label = 1
-        if count_2 >= 18 and count_2 <= 20:
+        if count_2 >= 14 and count_2 <= 20:
             label = 2
-        if count_3 >= 18 and count_3 <= 20:
+        if count_3 >= 14 and count_3 <= 20:
             label = 3
-        if count_4 >= 18 and count_4 <= 20:
+        if count_4 >= 14 and count_4 <= 20:
             label = 4
 
         window_3d = np.expand_dims(x_window, axis=0)
@@ -247,7 +248,7 @@ model = build_imu_tcn_model(
     num_channels=NUM_CHANNELS,
     num_classes=NUM_CLASSES,
     num_filters_list=(32, 32, 64),
-    kernel_size=3,
+    kernel_size=5,
     dropout_rate=0.3,
 )
 
@@ -266,12 +267,15 @@ early_stop = EarlyStopping(
     restore_best_weights=True
 )
 
+class_weights = {0:1.0, 1:5.0, 2:1.0, 3:1.0, 4:2.0}
+
 history = model.fit(
     X_train,
     y_train,
     validation_data=(X_val, y_val),
     epochs=50,
     batch_size=50,       # you said batch size = 50
+    class_weight=class_weights,
     callbacks=[early_stop],
     verbose=1,
 )
